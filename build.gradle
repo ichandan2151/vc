@@ -1,26 +1,60 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-buildscript {
-    ext.kotlin_version = "1.4.21"
-    repositories {
-        google()
-        jcenter()
-    }
-    dependencies {
-        classpath "com.android.tools.build:gradle:4.1.0"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+package com.example.visitingcard
 
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.provider.MediaStore
+import androidx.appcompat.app.AppCompatDelegate
+import kotlinx.android.synthetic.main.activity_main.*
 
-allprojects {
-    repositories {
-        google()
-        jcenter()
+class MainActivity : AppCompatActivity() {
+    private var img: Uri? = null
+    private var pickImg = 100
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        setViews()
     }
-}
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+    //Button handler functions
+    private fun setViews() {
+        logoBtn.setOnClickListener{pickImage()}
+        genBtn.setOnClickListener{setTextViews()}
+    }
+
+    //Function to set text views
+    private fun setTextViews(){
+        val cName = cName.getText()
+        val pName = pName.getText()
+        val pJob = pJob.getText()
+        val pPhone = pPhone.getText()
+        val pAddress = pAddress.getText()
+        val pMail = pMail.getText()
+
+        cNameView.text = cName
+        pNameView.text = pName
+        pJobView.text = pJob
+        pAddressView.text = pAddress
+        pMailView.text = pMail
+        pPhoneView.text = pPhone
+        lineView.setBackgroundColor(Color.BLACK)
+        cLogoView.setImageURI(img)
+    }
+
+    //Function to select picture
+    private fun pickImage(){
+        val pic = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(pic, pickImg)
+    }
+
+    //Function to apply picture
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == RESULT_OK && requestCode == pickImg){
+            img = data?.data
+        }
+    }
 }
